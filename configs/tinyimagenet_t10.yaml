@@ -1,0 +1,45 @@
+# exp1_main: TinyImageNet (200 classes), 10-task class-incremental split,
+# frozen ViT-B/16 (in21k).
+experiment: exp1_main
+run_id: tinyimagenet_t10
+
+seed: 0
+device: auto
+out_dir: ./runs
+
+data:
+  dataset: tinyimagenet
+  n_tasks: 10
+  classes_per_task: 20
+  class_order_seed: 1993
+  batch_size: 128
+  eval_batch_size: 256
+  num_workers: 4
+
+model:
+  backbone: vit_b16_in21k
+  pretrained: true
+  feature_dim: 768
+  freeze_backbone: true
+
+cl:
+  ridge_lambda: 1.0e-2
+  heads: ["onehot", "etf_exact", "etf_stale"]
+  frame:
+    kind: etf
+    frame_m: null
+    equinorm_mode: column
+    compressed_m: 32
+  rp:
+    enabled: false
+  etf:
+    seed: 0
+  imbalance:
+    enabled: false
+
+eval:
+  every_task: true
+
+checkpoint:
+  enabled: true
+  resume: true

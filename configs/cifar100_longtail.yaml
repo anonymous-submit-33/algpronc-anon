@@ -1,0 +1,48 @@
+# exp3_imbalance: CIFAR-100, 10-task class-incremental split with an
+# exponential-profile long-tailed per-task sample budget. Compares a plain
+# analytic head against its equinorm-wrapped counterpart on tail accuracy.
+experiment: exp3_imbalance
+run_id: cifar100_longtail
+
+seed: 0
+device: auto
+out_dir: ./runs
+
+data:
+  dataset: cifar100
+  n_tasks: 10
+  classes_per_task: 10
+  class_order_seed: 1993
+  batch_size: 128
+  eval_batch_size: 256
+  num_workers: 4
+
+model:
+  backbone: vit_b16_in21k
+  pretrained: true
+  feature_dim: 768
+  freeze_backbone: true
+
+cl:
+  ridge_lambda: 1.0e-2
+  heads: ["onehot", "equinorm:onehot"]
+  frame:
+    kind: etf
+    frame_m: null
+    equinorm_mode: column
+    compressed_m: 32
+  rp:
+    enabled: false
+  etf:
+    seed: 0
+  imbalance:
+    enabled: true
+    imbalance_ratio: 100.0
+    seed: 0
+
+eval:
+  every_task: true
+
+checkpoint:
+  enabled: true
+  resume: true

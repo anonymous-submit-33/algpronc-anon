@@ -1,0 +1,45 @@
+# Tiny, CPU-only, synthetic-feature config: the whole pipeline (any exp*.py)
+# should run in a few seconds with no dataset download and no backbone.
+experiment: exp0_equivalence
+run_id: debug
+
+seed: 0
+device: cpu
+out_dir: ./runs
+
+data:
+  dataset: synthetic
+  n_tasks: 4
+  classes_per_task: 3
+  class_order_seed: 0
+  batch_size: 32
+  eval_batch_size: 32
+  num_workers: 0
+
+model:
+  backbone: vit_b16_in21k # unused on the synthetic path; kept for schema parity
+  pretrained: false
+  feature_dim: 32
+  freeze_backbone: true
+
+cl:
+  ridge_lambda: 1.0e-2
+  heads: ["onehot", "etf_exact", "etf_stale"]
+  frame:
+    kind: etf
+    frame_m: null
+    equinorm_mode: column
+    compressed_m: 4
+  rp:
+    enabled: false
+  etf:
+    seed: 0
+  imbalance:
+    enabled: false
+
+eval:
+  every_task: true
+
+checkpoint:
+  enabled: true
+  resume: true
